@@ -1,16 +1,67 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ADMIN</title></head><body style="background:#0a0a14;color:#fff;padding:15px;font-family:sans-serif">
-<h3>ADMIN - Weka YouTube</h3>
-<input id="vTitle" placeholder="Jina" style="width:100%;padding:10px;margin:5px 0">
-<input id="vLink" placeholder="https://youtu.be/..." style="width:100%;padding:10px;margin:5px 0">
-<button onclick="addVideo()" style="width:100%;padding:12px;background:#ff2d55;color:#fff;border:none;border-radius:8px">+ WEKA VIDEO</button>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ADMIN ALE TV</title>
+<style>
+body{margin:0;background:#0a0a1a;color:#fff;font-family:sans-serif;padding:15px}
+input,select{width:100%;padding:15px;margin:8px 0;border-radius:12px;border:none;background:#1a1a2e;color:#fff;box-sizing:border-box;font-size:16px}
+button{width:100%;padding:15px;background:#ff6b00;border:none;border-radius:12px;color:#fff;font-weight:bold;font-size:16px}
+.item{background:#1a1a2e;padding:12px;margin:8px 0;border-radius:10px}
+</style>
+</head>
+<body>
+<h2>ADMIN - ALE TV</h2>
+<input id="t" placeholder="Jina la video">
+<input id="l" placeholder="Link ya YouTube">
+<select id="c"><option>Burudani</option><option>Habari</option><option>Muziki</option></select>
+<button onclick="addVideo()">WEKA KWENYE TV</button>
+<button onclick="clearAll()" style="background:#333;margin-top:8px">Futa Zote</button>
 <div id="list" style="margin-top:20px"></div>
-<div id="preview" style="margin-top:20px"></div>
+<p><a href="index.html" style="color:orange">Fungua TV</a></p>
 <script>
-function getId(u){let m=u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);return m?m[1]:null}
-function getV(){return JSON.parse(localStorage.getItem('aleTvVideos')||'[]')}
-function save(v){localStorage.setItem('aleTvVideos',JSON.stringify(v));render()}
-function addVideo(){let t=document.getElementById('vTitle').value.trim();let l=document.getElementById('vLink').value.trim();if(!t||!l)return alert('Weka jina na link');let id=getId(l);if(!id)return alert('Link si YouTube');let v=getV();v.push({id:id,title:t});save(v);document.getElementById('vTitle').value='';document.getElementById('vLink').value='';}
-function del(i){let v=getV();v.splice(i,1);save(v)}
-function render(){let v=getV();let h='';v.slice().reverse().forEach((x,i)=>{let idx=v.length-1-i;h+=`<div style="background:#1a1a2e;padding:10px;margin:8px 0;border-radius:8px;display:flex;justify-content:space-between"><span>${x.title}</span><button onclick="del(${idx})" style="background:red;color:#fff;border:none;padding:5px 10px">X</button></div>`});document.getElementById('list').innerHTML=h||'Hakuna';if(v.length>0){document.getElementById('preview').innerHTML=`<iframe width="100%" height="200" src="https://www.youtube.com/embed/${v[0].id}" frameborder="0" allowfullscreen></iframe>`}}
-render();
-</script></body></html>
+function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
+function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
+function getId(u){
+ var m=u.match(/(?:youtu\.be\/|v=|embed\/)([^&?\/]+)/);
+ return m?m[1]:u.trim()
+}
+function addVideo(){
+ var title=document.getElementById('t').value.trim();
+ var link=document.getElementById('l').value.trim();
+ var cat=document.getElementById('c').value;
+ if(!title){alert('WEKA JINA');return}
+ if(!link){alert('WEKA LINK');return}
+ var v=getV();
+ v.push({id:getId(link),title:title,cat:cat});
+ saveV(v);
+ document.getElementById('t').value='';
+ document.getElementById('l').value='';
+ showList();
+ alert('Imewekwa! Fungua TV sasa');
+}
+function delV(i){
+ var v=getV();
+ v.splice(i,1);
+ saveV(v);
+ showList();
+}
+function clearAll(){
+ if(confirm('Futa zote?')){
+  localStorage.removeItem('ale_videos');
+  showList();
+ }
+}
+function showList(){
+ var v=getV();
+ var h='';
+ for(var i=v.length-1;i>=0;i--){
+  h+='<div class=item><b>'+v[i].title+'</b><br><small>'+v[i].cat+' - '+v[i].id+'</small><br><button onclick="delV('+i+')" style="width:auto;background:red;padding:6px 12px;margin-top:6px">Futa</button></div>';
+ }
+ document.getElementById('list').innerHTML=h||'Hakuna video';
+}
+showList();
+</script>
+</body>
+</html>
