@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AZAM ALE TV LIVE</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+#top{background:#111;padding:12px;display:flex;justify-content:space-between;align-items:center}
+#player{width:100%;height:52vh;background:#111}
+.item{background:#1a1a2e;padding:12px;margin:8px;border-radius:10px}
+</style>
+</head>
+<body>
+<div id="top"><b>AZAM ALE TV</b><span style="background:red;padding:5px 12px;border-radius:20px;font-size:12px">● LIVE</span></div>
+<div id="player" style="display:flex;align-items:center;justify-content:center">Inapakia...</div>
+<h3 id="now" style="padding:10px"></h3>
+<div id="list" style="padding:10px"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// CHUKUA HII CONFIG KUTOKA admin.html YAKO - USIACHE HIVI
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "ale-tv-xxxxx.firebaseapp.com",
+  projectId: "ale-tv-xxxxx",
+  storageBucket: "ale-tv-xxxxx.appspot.com",
+  messagingSenderId: "123456",
+  appId: "1:123456:web:xxxx"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const q = query(collection(db,"videos"), orderBy("created","desc"));
+
+onSnapshot(q,(snap)=>{
+  let v=[]; snap.forEach(d=>v.push(d.data()));
+  if(v.length==0){document.getElementById('player').innerHTML='Hakuna video bado'; return}
+  if(!window.played) play(v[0].youtubeId, v[0].title);
+  let h=''; v.forEach(x=>{
+    h+=`<div class="item" onclick="play('${x.youtubeId}','${x.title.replace(/'/g,"")}')"><b>${x.title}</b><br><small>${x.category||'Burudani'}</small></div>`;
+  });
+  document.getElementById('list').innerHTML=h;
+});
+
+window.play=(id,title)=>{
+  document.getElementById('player').innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+  document.getElementById('now').innerText=title;
+  window.played=true;
+}
+</script>
+</body>
+</html>
