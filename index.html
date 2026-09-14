@@ -1,33 +1,62 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AZAM ALE TV LIVE</title>
-<style>body{margin:0;background:#000;color:#fff;font-family:sans-serif}#top{background:#111;padding:14px;display:flex;justify-content:space-between}#player{width:100%;height:56vh;background:#111;display:flex;align-items:center;justify-content:center}#now{padding:12px}.item{background:#1a1a2e;padding:14px;margin:8px;border-radius:12px;cursor:pointer}.live{background:red;padding:5px 12px;border-radius:20px;font-size:12px}</style>
+<title>AZAM ALE TV - LIVE v2</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+#top{background:#111;padding:12px;display:flex;justify-content:space-between;align-items:center}
+.live{background:red;color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+#player{width:100%;height:52vw;max-height:360px;background:#111}
+#player iframe{width:100%;height:100%;border:none}
+#now{padding:12px;font-size:18px;background:#0a0a1a}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.card{background:#1a1a2e;border-radius:12px;overflow:hidden;cursor:pointer}
+.thumb{height:90px;background:#222;display:flex;align-items:center;justify-content:center;font-size:30px}
+.info{padding:8px;font-size:13px}
+.ver{padding:8px;text-align:center;color:#555;font-size:10px}
+</style>
 </head><body>
-<div id="top"><b>AZAM ALE TV</b><span class="live">● LIVE</span></div>
-<div id="player">Hakuna video</div>
-<h3 id="now"></h3>
-<div id="list" style="padding:10px"></div>
+<div id="top"><b>AZAM ALE TV</b><span class="live">● LIVE v2.0</span></div>
+<div id="player"></div>
+<div id="now">Inapakia...</div>
+<div id="list" class="grid"></div>
+<div class="ver">Update: 14-09-2026 23:42 | Videos in storage: <span id="count">0</span></div>
+
 <script>
-function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
+function getStored(){
+ try{
+  let a=JSON.parse(localStorage.getItem('ale_videos')||'[]');
+  return Array.isArray(a)?a:[];
+ }catch(e){return []}
+}
+let defaults=[
+ {id:'L49A0bQkf_I',title:'Zipporah - Live',cat:'Muziki'},
+ {id:'dQw4w9WgXcQ',title:'Demo Test TV',cat:'Burudani'}
+];
+function getAll(){
+ let s=getStored();
+ return s.length>0? s : defaults;
+}
+let all=getAll();
+document.getElementById('count').innerText=getStored().length + ' | Total shown: '+all.length;
+
+function play(id,title){
+ document.getElementById('player').innerHTML='<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0" allowfullscreen></iframe>';
+ document.getElementById('now').innerText='▶️ Sasa: '+title;
+ window.scrollTo(0,0);
+}
 function render(){
- let vids=getV();
- if(vids.length==0){
-   document.getElementById('player').innerHTML='<div style=text-align:center;padding:30px>Hakuna video bado<br><small style=color:orange>Ingia /admin.html kuweka</small><br><br><small style=color:#666>Videos: '+localStorage.getItem('ale_videos')+'</small></div>';
-   document.getElementById('list').innerHTML='';
-   return;
- }
- play(vids[vids.length-1].id,vids[vids.length-1].title);
  let h='';
- for(let i=vids.length-1;i>=0;i--){
-  let v=vids[i];
-  h+='<div class=item onclick="play(\''+v.id+'\',\''+v.title.replace(/'/g,'')+'\')"><b>'+v.title+'</b><br><small>'+v.cat+'</small></div>';
+ for(let i=all.length-1;i>=0;i--){
+  let v=all[i];
+  h+='<div class="card" onclick="play(\''+v.id+'\',\''+v.title.replace(/'/g,'')+'\')"><div class="thumb">▶️</div><div class="info"><b>'+v.title+'</b><br><small style=color:#aaa>'+v.cat+'</small></div></div>';
  }
  document.getElementById('list').innerHTML=h;
-}
-window.play=function(id,t){
- document.getElementById('player').innerHTML='<iframe width="100%" height="100%" src="https://www.youtube.com/embed/'+id+'?autoplay=1" frameborder=0 allowfullscreen></iframe>';
- document.getElementById('now').innerText=t;
+ if(all.length>0) play(all[all.length-1].id, all[all.length-1].title);
 }
 render();
+setInterval(()=>{
+ let s=getStored();
+ if(s.length!=0 && s.length!=all.length){ all=s.length>0?s:defaults; render(); }
+},2000);
 </script>
 </body></html>
